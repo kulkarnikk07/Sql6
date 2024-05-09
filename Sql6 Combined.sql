@@ -32,3 +32,18 @@ on p.personId = a.personId
 
 -- 5 Problem 5 : Customers with Strictly Increasing Purchases		(https://leetcode.com/problems/customers-with-strictly-increasing-purchases/)
 
+with CTE as(
+    select customer_id, year(order_date) as 'year', sum(price) as 'price'
+    from Orders
+    group by customer_id, year
+    order by customer_id, year
+)
+
+select c1.customer_id 
+from CTE c1
+left join CTE c2
+on c1.customer_id = c2.customer_id
+and c1.year = c2.year-1
+and c1.price < c2.price
+group by 1
+having count(*)- count(c2.customer_id) =1
